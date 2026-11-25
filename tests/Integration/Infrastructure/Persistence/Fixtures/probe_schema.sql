@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS migration_probe (
+    id INT UNSIGNED NOT NULL PRIMARY KEY
+);
