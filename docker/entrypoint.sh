@@ -7,4 +7,7 @@ set -e
 a2dismod -q mpm_event mpm_worker || true
 a2enmod -q mpm_prefork
 
+# Crea las tablas que falten. Si ya existen, no hace nada.
+php bin/migrate.php
+
 exec apache2-foreground
