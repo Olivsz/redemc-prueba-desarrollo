@@ -29,11 +29,11 @@ final readonly class DatabaseConfig
     public static function fromEnvironment(array $environment): self
     {
         return new self(
-            host: self::required($environment, 'DB_HOST'),
-            port: self::port($environment),
-            database: self::required($environment, 'DB_NAME'),
-            user: self::required($environment, 'DB_USER'),
-            password: self::required($environment, 'DB_PASSWORD'),
+            host: self::readRequired($environment, 'DB_HOST'),
+            port: self::readPort($environment),
+            database: self::readRequired($environment, 'DB_NAME'),
+            user: self::readRequired($environment, 'DB_USER'),
+            password: self::readRequired($environment, 'DB_PASSWORD'),
         );
     }
 
@@ -48,7 +48,7 @@ final readonly class DatabaseConfig
         );
     }
 
-    private static function required(array $environment, string $name): string
+    private static function readRequired(array $environment, string $name): string
     {
         $value = $environment[$name] ?? '';
 
@@ -59,20 +59,23 @@ final readonly class DatabaseConfig
         return $value;
     }
 
-    private static function port(array $environment): int
+    private static function readPort(array $environment): int
     {
-        $port = filter_var(
-            self::required($environment, 'DB_PORT'),
-            FILTER_VALIDATE_INT,
-            ['options' => ['min_range' => self::MIN_PORT, 'max_range' => self::MAX_PORT]],
-        );
+        $port = self::readRequired($environment, 'DB_PORT');
 
-        if ($port === false) {
+        if (!self::isValidPort($port)) {
             throw new RuntimeException(
                 sprintf('Environment variable DB_PORT must be an integer between %d and %d.', self::MIN_PORT, self::MAX_PORT),
             );
         }
 
-        return $port;
+        return (int) $port;
+    }
+
+    private static function isValidPort(string $port): bool
+    {
+        return ctype_digit($port)
+            && (int) $port >= self::MIN_PORT
+            && (int) $port <= self::MAX_PORT;
     }
 }
