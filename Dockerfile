@@ -54,3 +54,6 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY --from=vendor /app/vendor/ vendor/
 COPY src/ src/
 COPY public/ public/
+
+COPY --chmod=755 docker/entrypoint.sh /usr/local/bin/app-entrypoint
+CMD ["app-entrypoint"]
