@@ -1,0 +1,8 @@
+# Finales de línea LF en el repositorio y en la copia de trabajo,
+# para que los archivos se comporten igual en Windows y dentro de los contenedores Linux.
+* text=auto eol=lf
+
+*.pdf binary
+*.png binary
+*.jpg binary
+*.ico binary
