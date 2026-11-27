@@ -27,6 +27,7 @@ final readonly class HttpKernel
         $router = new Router();
 
         $router->get('/', fn (Request $request) => self::pageController($csrfToken)->home($request));
+        $router->get('/api/csrf-token', fn (Request $request) => (new CsrfTokenController($csrfToken))->show($request));
         $router->get('/api/contacts', fn (Request $request) => self::contactController($environment)->list($request));
         $router->post('/api/contacts', fn (Request $request) => self::contactController($environment)->create($request));
 
