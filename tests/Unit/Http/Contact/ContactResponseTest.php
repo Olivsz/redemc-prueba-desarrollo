@@ -46,13 +46,13 @@ final class ContactResponseTest extends TestCase
     #[Test]
     public function presentsAPageWithItsPaginationData(): void
     {
-        $page = new ContactPage([$this->contact(phone: '')], page: 2, totalPages: 3, total: 17);
+        $page = new ContactPage([$this->contact(phone: '')], page: 2, totalPages: 4, total: 17, pageSize: 5);
 
         $json = json_decode(json_encode(ContactPageResponse::fromPage($page)), true);
 
         self::assertCount(1, $json['data']);
         self::assertSame('Ana María', $json['data'][0]['name']);
-        self::assertSame(['page' => 2, 'totalPages' => 3, 'total' => 17, 'pageSize' => 8], $json['meta']);
+        self::assertSame(['page' => 2, 'totalPages' => 4, 'total' => 17, 'pageSize' => 5], $json['meta']);
     }
 
     private function contact(string $phone): Contact

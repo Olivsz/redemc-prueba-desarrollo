@@ -47,6 +47,12 @@ final class ListContactsTest extends TestCase
     }
 
     #[Test]
+    public function informsHowManyContactsFitInAPage(): void
+    {
+        self::assertSame(8, $this->listContacts->execute(1)->pageSize);
+    }
+
+    #[Test]
     public function returnsTheFirstPageWhenThePageIsBelowOne(): void
     {
         $this->addContacts(10);
