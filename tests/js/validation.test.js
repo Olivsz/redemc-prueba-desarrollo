@@ -41,6 +41,13 @@ test('accepts well-formed emails', () => {
   }
 });
 
+test('limits the local part to 64 characters and each domain label to 63, as the server does', () => {
+  assert.equal(validateEmail(`${'a'.repeat(64)}@mail.com`), null);
+  assert.equal(validateEmail(`ana@${'b'.repeat(63)}.com`), null);
+  assert.equal(validateEmail(`${'a'.repeat(65)}@mail.com`), 'El email no tiene un formato válido.');
+  assert.equal(validateEmail(`ana@${'b'.repeat(64)}.com`), 'El email no tiene un formato válido.');
+});
+
 test('rejects an empty email', () => {
   assert.equal(validateEmail('  '), 'El email es obligatorio.');
 });

@@ -27,7 +27,17 @@ final class EmailTest extends TestCase
         yield 'uppercase is lowered' => ['Ana_Perez@Mail.COM', 'ana_perez@mail.com'];
         yield 'surrounding spaces are trimmed' => ['  ana@mail.com  ', 'ana@mail.com'];
         yield 'surrounding non-breaking spaces are trimmed' => ["\u{00A0}ana@mail.com\u{00A0}", 'ana@mail.com'];
-        yield 'exactly 254 characters' => [str_repeat('a', 245) . '@mail.com', str_repeat('a', 245) . '@mail.com'];
+        yield 'local part of 64 characters' => [str_repeat('a', 64) . '@mail.com', str_repeat('a', 64) . '@mail.com'];
+        yield 'domain label of 63 characters' => ['ana@' . str_repeat('b', 63) . '.com', 'ana@' . str_repeat('b', 63) . '.com'];
+        yield 'exactly 254 characters' => [self::emailOfLength(254), self::emailOfLength(254)];
+    }
+
+    // Respeta los límites de cada parte (64 la local y 63 cada parte del dominio), así solo pesa el largo total.
+    private static function emailOfLength(int $length): string
+    {
+        $prefix = str_repeat('a', 64) . '@' . str_repeat('b', 63) . '.' . str_repeat('c', 63) . '.';
+
+        return $prefix . str_repeat('d', $length - strlen($prefix) - strlen('.com')) . '.com';
     }
 
     #[Test]
@@ -71,6 +81,8 @@ final class EmailTest extends TestCase
         yield 'one-letter extension' => ['ana@mail.c'];
         yield 'numeric extension' => ['ana@mail.123'];
         yield 'accented letter' => ['maría@mail.com'];
-        yield 'longer than 254 characters' => [str_repeat('a', 246) . '@mail.com'];
+        yield 'local part longer than 64 characters' => [str_repeat('a', 65) . '@mail.com'];
+        yield 'domain label longer than 63 characters' => ['ana@' . str_repeat('b', 64) . '.com'];
+        yield 'longer than 254 characters' => [self::emailOfLength(255)];
     }
 }
