@@ -7,7 +7,6 @@ namespace App\Application;
 use App\Domain\Contact\Contact;
 use App\Domain\Contact\ContactField;
 use App\Domain\Contact\ContactRepository;
-use App\Domain\Contact\ContactValidationException;
 use App\Domain\Contact\DuplicateContactException;
 use App\Domain\Contact\NewContact;
 
@@ -23,7 +22,7 @@ final readonly class RegisterContact
 
         $this->ensureIsNotRegistered($contact);
 
-        return $this->save($contact);
+        return $this->contacts->add($contact);
     }
 
     private function ensureIsNotRegistered(NewContact $contact): void
@@ -31,7 +30,7 @@ final readonly class RegisterContact
         $duplicatedFields = $this->duplicatedFieldsOf($contact);
 
         if ($duplicatedFields !== []) {
-            throw ContactValidationException::forDuplicates(...$duplicatedFields);
+            throw new DuplicateContactException(...$duplicatedFields);
         }
     }
 
@@ -58,14 +57,5 @@ final readonly class RegisterContact
     private function isPhoneRegistered(NewContact $contact): bool
     {
         return $contact->phone !== null && $this->contacts->existsWithPhone($contact->phone);
-    }
-
-    private function save(NewContact $contact): Contact
-    {
-        try {
-            return $this->contacts->add($contact);
-        } catch (DuplicateContactException $exception) {
-            throw ContactValidationException::forDuplicates($exception->field);
-        }
     }
 }

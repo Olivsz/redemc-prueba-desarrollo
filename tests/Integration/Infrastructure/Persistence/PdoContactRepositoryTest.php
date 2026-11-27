@@ -83,7 +83,7 @@ final class PdoContactRepositoryTest extends TestCase
 
         $exception = $this->duplicateOf(fn () => $this->contacts->add(NewContact::fromInput('Otra', 'ana.test@mail.com', '')));
 
-        self::assertSame(ContactField::Email, $exception->field);
+        self::assertSame([ContactField::Email], $exception->fields);
     }
 
     #[Test]
@@ -93,7 +93,7 @@ final class PdoContactRepositoryTest extends TestCase
 
         $exception = $this->duplicateOf(fn () => $this->contacts->add(NewContact::fromInput('Luis', 'luis.test@mail.com', '091111111')));
 
-        self::assertSame(ContactField::Phone, $exception->field);
+        self::assertSame([ContactField::Phone], $exception->fields);
     }
 
     #[Test]
