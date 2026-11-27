@@ -10,7 +10,9 @@ use App\Domain\Contact\DuplicateContactException;
 use App\Http\ExceptionHandler;
 use App\Http\InvalidCsrfTokenException;
 use App\Http\InvalidRequestException;
+use App\Http\MethodNotAllowedException;
 use App\Http\Response;
+use App\Http\RouteNotFoundException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -44,6 +46,25 @@ final class ExceptionHandlerTest extends TestCase
 
         self::assertSame(403, $response->status);
         self::assertSame(['error' => 'La sesión expiró. Recargá la página e intentá de nuevo.'], $this->bodyOf($response));
+    }
+
+    #[Test]
+    public function answersNotFoundForAnUnknownRoute(): void
+    {
+        $response = $this->handler->toResponse(new RouteNotFoundException());
+
+        self::assertSame(404, $response->status);
+        self::assertSame(['error' => 'Recurso no encontrado.'], $this->bodyOf($response));
+    }
+
+    #[Test]
+    public function answersMethodNotAllowedWithTheAllowedMethods(): void
+    {
+        $response = $this->handler->toResponse(new MethodNotAllowedException(['GET', 'HEAD']));
+
+        self::assertSame(405, $response->status);
+        self::assertSame('GET, HEAD', $response->headers['Allow']);
+        self::assertSame(['error' => 'Método no permitido.'], $this->bodyOf($response));
     }
 
     #[Test]
