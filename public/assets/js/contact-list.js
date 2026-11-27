@@ -1,5 +1,6 @@
 import { fetchContacts } from './contacts-api.js';
 import { formatCreatedAt, initialsOf } from './format.js';
+import { trackLatestRequest } from './latest-request.js';
 import { visiblePages } from './pagination.js';
 
 const AVATAR_COLORS = 5;
@@ -12,14 +13,16 @@ export function createContactList() {
   const $status = $('#list-status');
   const $pagination = $('#pagination');
   const $total = $('#contacts-total');
+  const latestRequest = trackLatestRequest();
 
   function load(page, highlightedId = null) {
+    const onlyIfLatest = latestRequest.start();
     $list.addClass('is-loading').attr('aria-busy', 'true');
 
     fetchContacts(page)
-      .done(response => render(response, highlightedId))
-      .fail(() => showLoadError(page))
-      .always(() => $list.removeClass('is-loading').attr('aria-busy', 'false'));
+      .done(onlyIfLatest(response => render(response, highlightedId)))
+      .fail(onlyIfLatest(() => showLoadError(page)))
+      .always(onlyIfLatest(() => $list.removeClass('is-loading').attr('aria-busy', 'false')));
   }
 
   function render({ data, meta }, highlightedId) {
