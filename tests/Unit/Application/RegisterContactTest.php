@@ -39,7 +39,7 @@ final class RegisterContactTest extends TestCase
     #[Test]
     public function doesNotSaveAContactWithInvalidData(): void
     {
-        $errors = $this->errorsOf(fn () => $this->registerContact->execute('', 'ana@mail.com', ''));
+        $errors = $this->validationErrorsOf(fn () => $this->registerContact->execute('', 'ana@mail.com', ''));
 
         self::assertSame(['name' => 'El nombre es obligatorio.'], $errors);
         self::assertSame(0, $this->contacts->countAll());
@@ -50,7 +50,7 @@ final class RegisterContactTest extends TestCase
     {
         $this->registerContact->execute('Ana', 'ana@mail.com', '');
 
-        $errors = $this->errorsOf(fn () => $this->registerContact->execute('Otra Ana', 'ANA@Mail.com', ''));
+        $errors = $this->duplicateErrorsOf(fn () => $this->registerContact->execute('Otra Ana', 'ANA@Mail.com', ''));
 
         self::assertSame(['email' => 'Ya existe un contacto con ese email.'], $errors);
     }
@@ -60,7 +60,7 @@ final class RegisterContactTest extends TestCase
     {
         $this->registerContact->execute('Ana', 'ana@mail.com', '097680102');
 
-        $errors = $this->errorsOf(fn () => $this->registerContact->execute('Luis', 'luis@mail.com', '097680102'));
+        $errors = $this->duplicateErrorsOf(fn () => $this->registerContact->execute('Luis', 'luis@mail.com', '097680102'));
 
         self::assertSame(['phone' => 'Ya existe un contacto con ese teléfono.'], $errors);
     }
@@ -70,7 +70,7 @@ final class RegisterContactTest extends TestCase
     {
         $this->registerContact->execute('Ana', 'ana@mail.com', '097680102');
 
-        $errors = $this->errorsOf(fn () => $this->registerContact->execute('Ana', 'ana@mail.com', '097680102'));
+        $errors = $this->duplicateErrorsOf(fn () => $this->registerContact->execute('Ana', 'ana@mail.com', '097680102'));
 
         self::assertSame(
             [
@@ -96,12 +96,12 @@ final class RegisterContactTest extends TestCase
         $contacts = $this->createStub(ContactRepository::class);
         $contacts->method('add')->willThrowException(new DuplicateContactException(ContactField::Email));
 
-        $errors = $this->errorsOf(fn () => new RegisterContact($contacts)->execute('Ana', 'ana@mail.com', ''));
+        $errors = $this->duplicateErrorsOf(fn () => new RegisterContact($contacts)->execute('Ana', 'ana@mail.com', ''));
 
         self::assertSame(['email' => 'Ya existe un contacto con ese email.'], $errors);
     }
 
-    private function errorsOf(callable $action): array
+    private function validationErrorsOf(callable $action): array
     {
         try {
             $action();
@@ -110,5 +110,16 @@ final class RegisterContactTest extends TestCase
         }
 
         self::fail('Expected a ContactValidationException.');
+    }
+
+    private function duplicateErrorsOf(callable $action): array
+    {
+        try {
+            $action();
+        } catch (DuplicateContactException $exception) {
+            return $exception->errors();
+        }
+
+        self::fail('Expected a DuplicateContactException.');
     }
 }
