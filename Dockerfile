@@ -9,8 +9,10 @@ FROM php:8.4-apache AS base
 # Apache lee la variable al arrancar; 8080 es el valor por defecto en local.
 ENV PORT=8080
 
+# Se apagan módulos que la app no usa y que delatan a Apache: alias publica /icons/ y status, /server-status.
 RUN docker-php-ext-install pdo_mysql \
     && a2enmod headers \
+    && a2dismod -f alias autoindex status \
     && sed -i 's/^Listen 80$/Listen ${PORT}/' /etc/apache2/ports.conf
 
 COPY docker/apache/app.conf /etc/apache2/sites-available/000-default.conf
