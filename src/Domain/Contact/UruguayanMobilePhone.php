@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Contact;
 
+use App\Domain\Whitespace;
+
 final readonly class UruguayanMobilePhone
 {
     private const string NINE_DIGITS_STARTING_WITH_09 = '/^09[0-9]{7}$/D';
@@ -21,7 +23,7 @@ final readonly class UruguayanMobilePhone
 
     public static function fromOptionalString(string $phone): ?self
     {
-        if (self::isBlank($phone)) {
+        if (Whitespace::isBlank($phone)) {
             return null;
         }
 
@@ -35,10 +37,5 @@ final readonly class UruguayanMobilePhone
                 'El teléfono debe ser un celular uruguayo de 9 dígitos que empiece con 09, sin espacios ni guiones (por ejemplo: 097680102).',
             );
         }
-    }
-
-    private static function isBlank(string $phone): bool
-    {
-        return trim($phone) === '';
     }
 }

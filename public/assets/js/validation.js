@@ -6,6 +6,8 @@ const EMAIL_MAX_LENGTH = 254;
 const LETTERS_AND_SINGLE_SPACES = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü]+( [A-Za-zÁÉÍÓÚáéíóúÑñÜü]+)*$/;
 const EMAIL_FORMAT = /^[A-Za-z0-9_%+-]+(\.[A-Za-z0-9_%+-]+)*@([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,}$/;
 const NINE_DIGITS_STARTING_WITH_09 = /^09[0-9]{7}$/;
+// Como en el servidor, cualquier espacio Unicode (por ejemplo, el espacio duro) cuenta como un espacio.
+const RUNS_OF_SPACES = /\p{Zs}+/gu;
 
 const NAME_RULES = [
   { isBroken: name => name === '', message: 'El nombre es obligatorio.' },
@@ -48,7 +50,7 @@ function firstBrokenRule(rules, value) {
 }
 
 function normalizeSpaces(text) {
-  return text.replace(/ {2,}/g, ' ').trim();
+  return text.replace(RUNS_OF_SPACES, ' ').trim();
 }
 
 function isWellFormedEmail(email) {
