@@ -1,0 +1,8 @@
+.git
+.env
+vendor
+tests
+.phpunit.cache
+*.md
+*.pdf
+compose.yaml
