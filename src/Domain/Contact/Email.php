@@ -17,15 +17,24 @@ final readonly class Email
     {
         $trimmed = trim($email);
 
-        if ($trimmed === '') {
-            throw new InvalidContactDataException('El email es obligatorio.');
-        }
-
-        if (!self::isWellFormed($trimmed)) {
-            throw new InvalidContactDataException('El email no tiene un formato válido.');
-        }
+        self::ensureIsNotEmpty($trimmed);
+        self::ensureIsWellFormed($trimmed);
 
         return new self(strtolower($trimmed));
+    }
+
+    private static function ensureIsNotEmpty(string $email): void
+    {
+        if ($email === '') {
+            throw new InvalidContactDataException('El email es obligatorio.');
+        }
+    }
+
+    private static function ensureIsWellFormed(string $email): void
+    {
+        if (!self::isWellFormed($email)) {
+            throw new InvalidContactDataException('El email no tiene un formato válido.');
+        }
     }
 
     private static function isWellFormed(string $email): bool

@@ -17,17 +17,9 @@ final readonly class PersonName
     {
         $normalized = self::normalizeSpaces($name);
 
-        if ($normalized === '') {
-            throw new InvalidContactDataException('El nombre es obligatorio.');
-        }
-
-        if (mb_strlen($normalized) > self::MAX_LENGTH) {
-            throw new InvalidContactDataException(sprintf('El nombre no puede superar los %d caracteres.', self::MAX_LENGTH));
-        }
-
-        if (preg_match(self::LETTERS_AND_SINGLE_SPACES, $normalized) !== 1) {
-            throw new InvalidContactDataException('El nombre solo puede contener letras y espacios.');
-        }
+        self::ensureIsNotEmpty($normalized);
+        self::ensureDoesNotExceedMaxLength($normalized);
+        self::ensureContainsOnlyLettersAndSpaces($normalized);
 
         return new self($normalized);
     }
@@ -35,5 +27,28 @@ final readonly class PersonName
     private static function normalizeSpaces(string $name): string
     {
         return trim(preg_replace('/ {2,}/', ' ', $name));
+    }
+
+    private static function ensureIsNotEmpty(string $name): void
+    {
+        if ($name === '') {
+            throw new InvalidContactDataException('El nombre es obligatorio.');
+        }
+    }
+
+    private static function ensureDoesNotExceedMaxLength(string $name): void
+    {
+        if (mb_strlen($name) > self::MAX_LENGTH) {
+            throw new InvalidContactDataException(
+                sprintf('El nombre no puede superar los %d caracteres.', self::MAX_LENGTH),
+            );
+        }
+    }
+
+    private static function ensureContainsOnlyLettersAndSpaces(string $name): void
+    {
+        if (preg_match(self::LETTERS_AND_SINGLE_SPACES, $name) !== 1) {
+            throw new InvalidContactDataException('El nombre solo puede contener letras y espacios.');
+        }
     }
 }
