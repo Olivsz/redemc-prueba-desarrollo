@@ -8,8 +8,28 @@ use DomainException;
 
 final class DuplicateContactException extends DomainException
 {
-    public function __construct(public readonly ContactField $field)
+    private const array MESSAGES = [
+        'email' => 'Ya existe un contacto con ese email.',
+        'phone' => 'Ya existe un contacto con ese teléfono.',
+    ];
+
+    public readonly array $fields;
+
+    public function __construct(ContactField ...$fields)
     {
-        parent::__construct("A contact with the same {$field->value} already exists.");
+        $this->fields = $fields;
+
+        parent::__construct('The contact is already registered.');
+    }
+
+    public function errors(): array
+    {
+        $errors = [];
+
+        foreach ($this->fields as $field) {
+            $errors[$field->value] = self::MESSAGES[$field->value];
+        }
+
+        return $errors;
     }
 }
