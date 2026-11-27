@@ -8,7 +8,7 @@ use App\Domain\Contact\ContactRepository;
 
 final readonly class ListContacts
 {
-    public const int PAGE_SIZE = 8;
+    private const int PAGE_SIZE = 8;
 
     public function __construct(private ContactRepository $contacts)
     {
@@ -25,6 +25,7 @@ final readonly class ListContacts
             page: $page,
             totalPages: $totalPages,
             total: $total,
+            pageSize: self::PAGE_SIZE,
         );
     }
 

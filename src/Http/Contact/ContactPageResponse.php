@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Contact;
 
 use App\Application\ContactPage;
-use App\Application\ListContacts;
 use JsonSerializable;
 
 final readonly class ContactPageResponse implements JsonSerializable
@@ -24,7 +23,7 @@ final readonly class ContactPageResponse implements JsonSerializable
                 'page' => $page->page,
                 'totalPages' => $page->totalPages,
                 'total' => $page->total,
-                'pageSize' => ListContacts::PAGE_SIZE,
+                'pageSize' => $page->pageSize,
             ],
         );
     }
