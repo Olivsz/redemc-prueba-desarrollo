@@ -11,6 +11,8 @@ final class Router
     public function get(string $path, callable $handler): void
     {
         $this->routes[$path]['GET'] = $handler;
+        // HEAD es un GET sin cuerpo (Apache lo descarta). Lo usan, por ejemplo, los monitores de disponibilidad.
+        $this->routes[$path]['HEAD'] = $handler;
     }
 
     public function post(string $path, callable $handler): void
@@ -18,30 +20,15 @@ final class Router
         $this->routes[$path]['POST'] = $handler;
     }
 
-    public function dispatch(Request $request): Response
+    public function match(Request $request): callable
     {
-        $handler = $this->handlerFor($request);
+        $routesOfPath = $this->routesOf($request->path);
 
-        return $handler($request);
+        return $routesOfPath[$request->method] ?? throw new MethodNotAllowedException(array_keys($routesOfPath));
     }
 
-    private function handlerFor(Request $request): callable
+    private function routesOf(string $path): array
     {
-        $routesOfPath = $this->routes[$request->path] ?? null;
-
-        if ($routesOfPath === null) {
-            return fn () => Response::json(404, ['error' => 'Recurso no encontrado.']);
-        }
-
-        return $routesOfPath[$request->method] ?? $this->methodNotAllowed(array_keys($routesOfPath));
-    }
-
-    private function methodNotAllowed(array $allowedMethods): callable
-    {
-        return fn () => Response::json(
-            405,
-            ['error' => 'Método no permitido.'],
-            ['Allow' => implode(', ', $allowedMethods)],
-        );
+        return $this->routes[$path] ?? throw new RouteNotFoundException();
     }
 }

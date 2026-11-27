@@ -48,9 +48,11 @@ final readonly class HttpKernel
 
     private function process(Request $request): Response
     {
+        $handler = $this->router->match($request);
+
         $this->csrfProtection->ensureIsAllowed($request);
 
-        return $this->router->dispatch($request);
+        return $handler($request);
     }
 
     private static function pageController(CsrfToken $csrfToken): PageController
