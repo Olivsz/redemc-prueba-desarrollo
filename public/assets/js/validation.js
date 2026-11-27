@@ -4,7 +4,8 @@
 const NAME_MAX_LENGTH = 100;
 const EMAIL_MAX_LENGTH = 254;
 const LETTERS_AND_SINGLE_SPACES = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü]+( [A-Za-zÁÉÍÓÚáéíóúÑñÜü]+)*$/;
-const EMAIL_FORMAT = /^[A-Za-z0-9_%+-]+(\.[A-Za-z0-9_%+-]+)*@([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,}$/;
+// La parte local llega hasta 64 caracteres (RFC 5321) y cada parte del dominio, hasta 63 (RFC 1035).
+const EMAIL_FORMAT = /^(?=[^@]{1,64}@)[A-Za-z0-9_%+-]+(\.[A-Za-z0-9_%+-]+)*@([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,63}$/;
 const NINE_DIGITS_STARTING_WITH_09 = /^09[0-9]{7}$/;
 // Como en el servidor, cualquier espacio Unicode (por ejemplo, el espacio duro) cuenta como un espacio.
 const RUNS_OF_SPACES = /\p{Zs}+/gu;
