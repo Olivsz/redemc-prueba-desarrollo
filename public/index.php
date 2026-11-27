@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Http\HttpKernel;
+use App\CompositionRoot;
 use App\Http\Request;
 use App\Http\Session;
 
@@ -12,4 +12,4 @@ $request = Request::fromGlobals();
 
 Session::start($request);
 
-HttpKernel::create(getenv())->handle($request)->send();
+CompositionRoot::httpKernel(getenv())->handle($request)->send();

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Contact;
 
+use App\Domain\Whitespace;
+
 final readonly class PersonName
 {
     private const int MAX_LENGTH = 100;
@@ -15,18 +17,13 @@ final readonly class PersonName
 
     public static function fromString(string $name): self
     {
-        $normalized = self::normalizeSpaces($name);
+        $normalized = Whitespace::collapse($name);
 
         self::ensureIsNotEmpty($normalized);
         self::ensureDoesNotExceedMaxLength($normalized);
         self::ensureContainsOnlyLettersAndSpaces($normalized);
 
         return new self($normalized);
-    }
-
-    private static function normalizeSpaces(string $name): string
-    {
-        return trim(preg_replace('/ {2,}/', ' ', $name));
     }
 
     private static function ensureIsNotEmpty(string $name): void

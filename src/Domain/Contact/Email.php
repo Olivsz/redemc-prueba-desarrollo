@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Contact;
 
+use App\Domain\Whitespace;
+
 final readonly class Email
 {
     private const int MAX_LENGTH = 254;
@@ -15,7 +17,7 @@ final readonly class Email
 
     public static function fromString(string $email): self
     {
-        $trimmed = trim($email);
+        $trimmed = Whitespace::trim($email);
 
         self::ensureIsNotEmpty($trimmed);
         self::ensureIsWellFormed($trimmed);

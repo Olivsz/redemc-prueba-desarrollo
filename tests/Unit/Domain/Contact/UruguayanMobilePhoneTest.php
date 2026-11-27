@@ -64,6 +64,7 @@ final class UruguayanMobilePhoneTest extends TestCase
     {
         yield 'empty' => [''];
         yield 'only spaces' => ['   '];
+        yield 'only non-breaking spaces' => ["\u{00A0}\u{00A0}"];
     }
 
     #[Test]

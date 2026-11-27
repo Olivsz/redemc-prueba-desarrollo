@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Http;
 
+use App\Http\MethodNotAllowedException;
 use App\Http\Request;
 use App\Http\Response;
+use App\Http\RouteNotFoundException;
 use App\Http\Router;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -22,9 +24,9 @@ final class RouterTest extends TestCase
     }
 
     #[Test]
-    public function callsTheHandlerOfTheMatchingRoute(): void
+    public function findsTheHandlerOfTheMatchingRoute(): void
     {
-        $response = $this->router->dispatch(new Request('GET', '/api/contacts'));
+        $response = $this->handle(new Request('GET', '/api/contacts'));
 
         self::assertSame(200, $response->status);
         self::assertSame(['handledBy' => 'list'], json_decode($response->body, true));
@@ -33,28 +35,40 @@ final class RouterTest extends TestCase
     #[Test]
     public function distinguishesRoutesByMethod(): void
     {
-        $response = $this->router->dispatch(new Request('POST', '/api/contacts'));
+        $response = $this->handle(new Request('POST', '/api/contacts'));
 
         self::assertSame(201, $response->status);
         self::assertSame(['handledBy' => 'create'], json_decode($response->body, true));
     }
 
     #[Test]
-    public function respondsNotFoundForAnUnknownPath(): void
+    public function answersHeadWithTheHandlerOfGet(): void
     {
-        $response = $this->router->dispatch(new Request('GET', '/api/unknown'));
+        $response = $this->handle(new Request('HEAD', '/api/contacts'));
 
-        self::assertSame(404, $response->status);
-        self::assertSame(['error' => 'Recurso no encontrado.'], json_decode($response->body, true));
+        self::assertSame(['handledBy' => 'list'], json_decode($response->body, true));
     }
 
     #[Test]
-    public function respondsMethodNotAllowedForAKnownPathWithAnotherMethod(): void
+    public function rejectsAnUnknownPath(): void
     {
-        $response = $this->router->dispatch(new Request('DELETE', '/api/contacts'));
+        $this->expectException(RouteNotFoundException::class);
 
-        self::assertSame(405, $response->status);
-        self::assertSame('GET, POST', $response->headers['Allow']);
-        self::assertSame(['error' => 'Método no permitido.'], json_decode($response->body, true));
+        $this->router->match(new Request('GET', '/api/unknown'));
+    }
+
+    #[Test]
+    public function rejectsAKnownPathWithAnotherMethod(): void
+    {
+        $this->expectException(MethodNotAllowedException::class);
+
+        $this->router->match(new Request('DELETE', '/api/contacts'));
+    }
+
+    private function handle(Request $request): Response
+    {
+        $handler = $this->router->match($request);
+
+        return $handler($request);
     }
 }

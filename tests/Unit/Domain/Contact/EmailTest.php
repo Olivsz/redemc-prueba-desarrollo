@@ -26,6 +26,7 @@ final class EmailTest extends TestCase
         yield 'hyphen inside the domain' => ['ana@mi-empresa.com', 'ana@mi-empresa.com'];
         yield 'uppercase is lowered' => ['Ana_Perez@Mail.COM', 'ana_perez@mail.com'];
         yield 'surrounding spaces are trimmed' => ['  ana@mail.com  ', 'ana@mail.com'];
+        yield 'surrounding non-breaking spaces are trimmed' => ["\u{00A0}ana@mail.com\u{00A0}", 'ana@mail.com'];
         yield 'exactly 254 characters' => [str_repeat('a', 245) . '@mail.com', str_repeat('a', 245) . '@mail.com'];
     }
 
@@ -43,6 +44,7 @@ final class EmailTest extends TestCase
     {
         yield 'empty' => [''];
         yield 'only spaces' => ['   '];
+        yield 'only non-breaking spaces' => ["\u{00A0}\u{00A0}"];
     }
 
     #[Test]

@@ -63,6 +63,25 @@ final class HttpKernelTest extends TestCase
     }
 
     #[Test]
+    public function answersNotFoundForAnUnknownPathBeforeCheckingTheCsrfToken(): void
+    {
+        $response = $this->kernel->handle(new Request('POST', '/no-existe'));
+
+        self::assertSame(404, $response->status);
+    }
+
+    #[Test]
+    public function answersMethodNotAllowedBeforeCheckingTheCsrfToken(): void
+    {
+        $this->router->get('/api/contacts', fn () => Response::json(200, ['ok' => true]));
+
+        $response = $this->kernel->handle(new Request('DELETE', '/api/contacts'));
+
+        self::assertSame(405, $response->status);
+        self::assertSame('GET, HEAD', $response->headers['Allow']);
+    }
+
+    #[Test]
     public function answersInternalServerErrorForAnUnexpectedError(): void
     {
         $this->router->get('/api/contacts', fn () => throw new RuntimeException('SQLSTATE: la base no responde'));
