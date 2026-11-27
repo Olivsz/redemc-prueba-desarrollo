@@ -25,7 +25,7 @@ final readonly class ExceptionHandler
             $error instanceof RouteNotFoundException => Response::json(404, ['error' => $error->getMessage()]),
             $error instanceof MethodNotAllowedException => $this->methodNotAllowed($error),
             $error instanceof DuplicateContactException => Response::json(409, ['errors' => $error->errors()]),
-            $error instanceof ContactValidationException => Response::json(422, ['errors' => $error->errors]),
+            $error instanceof ContactValidationException => Response::json(422, ['errors' => $error->errors()]),
             default => $this->unexpected($error),
         };
     }
