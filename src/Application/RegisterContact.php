@@ -39,15 +39,25 @@ final readonly class RegisterContact
     {
         $fields = [];
 
-        if ($this->contacts->existsWithEmail($contact->email)) {
+        if ($this->isEmailRegistered($contact)) {
             $fields[] = ContactField::Email;
         }
 
-        if ($contact->phone !== null && $this->contacts->existsWithPhone($contact->phone)) {
+        if ($this->isPhoneRegistered($contact)) {
             $fields[] = ContactField::Phone;
         }
 
         return $fields;
+    }
+
+    private function isEmailRegistered(NewContact $contact): bool
+    {
+        return $this->contacts->existsWithEmail($contact->email);
+    }
+
+    private function isPhoneRegistered(NewContact $contact): bool
+    {
+        return $contact->phone !== null && $this->contacts->existsWithPhone($contact->phone);
     }
 
     private function save(NewContact $contact): Contact
