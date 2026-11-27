@@ -9,7 +9,8 @@ use App\Domain\Whitespace;
 final readonly class Email
 {
     private const int MAX_LENGTH = 254;
-    private const string FORMAT = '/^[A-Za-z0-9_%+-]+(\.[A-Za-z0-9_%+-]+)*@([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,}$/D';
+    // La parte local llega hasta 64 caracteres (RFC 5321) y cada parte del dominio, hasta 63 (RFC 1035).
+    private const string FORMAT = '/^(?=[^@]{1,64}@)[A-Za-z0-9_%+-]+(\.[A-Za-z0-9_%+-]+)*@([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,63}$/D';
 
     private function __construct(public string $value)
     {

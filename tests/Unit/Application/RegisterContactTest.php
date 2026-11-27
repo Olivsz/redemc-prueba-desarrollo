@@ -106,7 +106,7 @@ final class RegisterContactTest extends TestCase
         try {
             $action();
         } catch (ContactValidationException $exception) {
-            return $exception->errors;
+            return $exception->errors();
         }
 
         self::fail('Expected a ContactValidationException.');

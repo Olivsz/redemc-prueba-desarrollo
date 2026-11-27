@@ -11,6 +11,7 @@ final readonly class ContactPage
         public int $page,
         public int $totalPages,
         public int $total,
+        public int $pageSize,
     ) {
     }
 }
