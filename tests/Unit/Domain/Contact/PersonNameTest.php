@@ -27,6 +27,8 @@ final class PersonNameTest extends TestCase
         yield 'diaeresis' => ['Agüero', 'Agüero'];
         yield 'surrounding spaces are trimmed' => ['  Ana  ', 'Ana'];
         yield 'repeated spaces are collapsed' => ['Ana    María', 'Ana María'];
+        yield 'non-breaking spaces count as spaces' => ["\u{00A0}Ana\u{00A0}\u{00A0}María\u{00A0}", 'Ana María'];
+        yield 'other unicode spaces count as spaces' => ["Ana\u{202F}María\u{3000}", 'Ana María'];
         yield 'exactly 100 characters' => [str_repeat('a', 100), str_repeat('a', 100)];
     }
 
@@ -44,6 +46,7 @@ final class PersonNameTest extends TestCase
     {
         yield 'empty' => [''];
         yield 'only spaces' => ['     '];
+        yield 'only non-breaking spaces' => ["\u{00A0}\u{00A0}"];
     }
 
     #[Test]
@@ -65,6 +68,7 @@ final class PersonNameTest extends TestCase
         yield 'dot' => ['Ana.'];
         yield 'html' => ['<script>'];
         yield 'tab between words' => ["Ana\tMaría"];
+        yield 'invalid UTF-8' => ["Ana\xFF"];
     }
 
     #[Test]

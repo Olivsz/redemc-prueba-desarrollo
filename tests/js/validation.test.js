@@ -11,6 +11,14 @@ test('accepts names with letters, accents, ñ, ü and spaces', () => {
   }
 });
 
+test('treats unicode spaces, like the non-breaking space, as spaces, as the server does', () => {
+  assert.equal(validateName(' Ana  María '), null);
+  assert.equal(validateName('Ana María　'), null);
+  assert.equal(validateName('  '), 'El nombre es obligatorio.');
+  assert.equal(validateEmail(' ana@mail.com '), null);
+  assert.equal(validatePhone('  '), null);
+});
+
 test('rejects an empty name, including one made only of spaces', () => {
   assert.equal(validateName(''), 'El nombre es obligatorio.');
   assert.equal(validateName('   '), 'El nombre es obligatorio.');
